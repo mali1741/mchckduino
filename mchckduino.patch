@@ -1,0 +1,23 @@
+--- orig/mk20dx128.c	2014-04-02 18:35:19.946616598 +0200
++++ new/mk20dx128.c	2014-04-02 18:41:04.646633281 +0200
+@@ -398,6 +398,11 @@
+ 	for (i=0; i < NVIC_NUM_INTERRUPTS; i++) NVIC_SET_PRIORITY(i, 128);
+ 
+ 	// start in FEI mode
++
++#if (defined(MCHCK)) 
++       	MCG_C4 = MCG_C4_DRST_DRS(1) | MCG_C4_DMX32;
++        SIM_SOPT2 = SIM_SOPT2_USBSRC | SIM_SOPT2_TRACECLKSEL | SIM_SOPT2_CLKOUTSEL(6);
++#else
+ 	// enable capacitors for crystal
+ 	OSC0_CR = OSC_SC8P | OSC_SC2P;
+ 	// enable osc, 8-32 MHz range, low power mode
+@@ -441,7 +446,7 @@
+ 	SIM_CLKDIV2 = SIM_CLKDIV2_USBDIV(1); // USB = 96 MHz PLL / 2
+ 	// USB uses PLL clock, trace is CPU clock, CLKOUT=OSCERCLK0
+ 	SIM_SOPT2 = SIM_SOPT2_USBSRC | SIM_SOPT2_PLLFLLSEL | SIM_SOPT2_TRACECLKSEL | SIM_SOPT2_CLKOUTSEL(6);
+-
++#endif
+ 	// initialize the SysTick counter
+ 	SYST_RVR = (F_CPU / 1000) - 1;
+ 	SYST_CSR = SYST_CSR_CLKSOURCE | SYST_CSR_TICKINT | SYST_CSR_ENABLE;

@@ -1,0 +1,50 @@
+#!/bin/bash
+
+oldargs=$@
+
+set -- "-$1" "-$2" "-$3"
+
+args=$(getopt -l "file:,path:,tools:" -o "f:p:t:" -- "$@")
+
+eval set -- "$args"
+
+while [ $# -ge 1 ]; do
+        case "$1" in
+                --)
+                    # No more options left.
+                    shift
+                    break
+                   ;;
+                -f|--file)
+                        filename="$2"
+                        shift
+                        ;;
+                -p|--path)
+                        projpath="$2"
+                        shift
+                        ;;
+                -t|--tools)
+                        toolspath="$2"
+                        shift
+                        ;;
+       esac
+
+        shift
+done
+
+echo "file: $filename"
+echo "path: $projpath"
+echo "tools: $toolspath"
+
+cd $projpath
+
+ELFS="*.elf"
+
+for file in $ELFS ; do         # Use ./* ... NEVER bare *
+  if [ -e "$file" ] ; then   # Check whether file exists.
+    echo "found: $file"
+    basefile=`basename $file .elf`
+    ${toolspath}/arm-none-eabi/bin/arm-none-eabi-objcopy -v -O binary $file $basefile.bin 2>&1
+  fi
+done
+

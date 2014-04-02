@@ -1,0 +1,9 @@
+#!/bin/bash
+
+source ~/.mchckrc
+filepath=`dirname $1`
+basefile=`basename $1 .hex`
+prgpath=`dirname $0`
+
+ruby $prgpath/programmer/flash.rb ${MCHCKADAPTER} $filepath/$basefile.bin 0
+
